@@ -2,7 +2,7 @@
 
    Copyright:
      2009 ACME Corporation -or- Your Name, http://www.example.com
-     
+
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
      EPL: http://www.eclipse.org/org/documents/epl-v10.php
@@ -10,46 +10,58 @@
 
    Authors:
      * Christian Boulanger (cboulanger)
+     * Matthew Gregory (noggin182)
 
 ************************************************************************ */
 
 /* ************************************************************************
-
 #asset(collapsablepanel/*)
-
 ************************************************************************ */
 
 /**
- * This is the main class of contribution "collapsablePanel"
+ *
+ * A collapsable panel with a caption
+ *
+ * This is the main class of the contribution <i>collapsablePanel</i><br/>
+ * It is a container that can be shown/hidden by clicking on the it's
+ * header or by setting the {@link collapsablepanel.Panel#value} property.
+ *
+ * The widget API (get/setLayout, add get/setContentPadding etc..) works
+ * directly on the collapsable part itself so you can treat this as a
+ * standard container
+ *
+ * *Example*
+ *
+ * Here is a little example of how to use this panel.
+ *
+ * <pre class='javascript'>
+ *   // create the panel
+ *   var panel = new collapsablepanel.Panel("MyPanel");
+ *
+ *   // configure it with a horizontal box layout with a spacing of '5'
+ *   panel.setLayout(new qx.ui.layout.HBox(5));
+ *
+ *   // add some children
+ *   panel.add(new qx.ui.basic.Label("Name: "));
+ *   panel.add(new qx.ui.form.TextField());
+ *
+ *   this.getRoot().add(panel);
+ * </pre>
+ *
+ * <a href='http://qooxdoo.org/contrib/project/collapsablepanel' target='_blank'>
+ * Documentation of this widget in the qooxdoo wiki.</a>
  * 
+ * @state opened Whether the panel is currently open
  */
 qx.Class.define("collapsablepanel.Panel",
 {
-  extend : qx.ui.container.Composite,
-  /*
-  *****************************************************************************
-     PROPERTIES
-  *****************************************************************************
-  */
-  properties :
-  {
-    opened :
-    {
-      check : "Boolean",
-      init : true,
-      apply : "_applyOpened",
-      event : "changeOpened"
-    },
-    
-    content :
-    {
-      check : "qx.ui.core.Widget",
-      nullable : true,
-      apply : "_applyContent",
-      event : "changeContent"
-    }
-    
-  },
+  extend : qx.ui.core.Widget,
+  include :
+  [
+    qx.ui.core.MRemoteChildrenHandling,
+    qx.ui.core.MRemoteLayoutHandling,
+    qx.ui.core.MContentPadding
+  ],
 
   /*
   *****************************************************************************
@@ -59,49 +71,59 @@ qx.Class.define("collapsablepanel.Panel",
 
   /**
    * Create a new collapsable panel
-   * 
-   * @param label {String} Label to use
-   * @param icon {String?null} Icon to use
+   *
+   * @param label {String} The caption for container
+   * @param layout {qx.ui.layout.Abstract?qx.ui.layout.Grow} A layout instance to use to
+   *   place widgets within the panel
    */
-  construct : function(label, icon) 
+  construct : function(label, layout)
   {
     this.base(arguments);
-    this.setLayout( new qx.ui.layout.VBox() );
-    
-    /*
-     * bar
-     */
-    this._atom = new qx.ui.basic.Atom( label, icon );
-    this._bar = new qx.ui.menubar.MenuBar();
-    this._image = new qx.ui.basic.Image("decoration/tree/open.png");
-    this._image.setMargin(5);
-    this._bar.addListener("click", this._onToggleOpen, this);
-    this._bar.add( this._image );
-    this._bar.add( this._atom );
-    this._bar.addListener("dblclick", this._onToggleOpen, this);
-    this.add( this._bar );
-    
-    /*
-     * content
-     */
-    this._container = new qx.ui.container.Composite( new qx.ui.layout.Grow() );
-    this._container.set({
-      decorator : "main",
-      padding : 3
-    });
-    this.add( this._container, { flex : 1} );
-    
-    /*
-     * effect
-     */
-//    this._container.addListener("appear",function(){
-//      this._effect = new qx.fx.effect.core.Scale( this._container.getContentElement().getDomElement() );
-//      this._effect.setScaleContent(false);
-//    this._effect.setScaleFromCenter(false);    
-//    },this);
-    
+
+    this._setLayout(new qx.ui.layout.VBox());
+
+    this.getChildControl("bar");
+    this.getChildControl("container");
+
+    if (label != null) {
+      this.setCaption(label);
+    }
+
+    this.setLayout(layout || new qx.ui.layout.Grow());
   },
-  
+
+  /*
+  *****************************************************************************
+     PROPERTIES
+  *****************************************************************************
+  */
+  properties :
+  {
+    appearance :
+    {
+      refine : true,
+      init   : "collapsable-panel"
+    },
+
+    /** Boolean indicating the opened/closed state of the pane */
+    value :
+    {
+      check : "Boolean",
+      init  : true,
+      apply : "_applyValue",
+      event : "changeValue"
+    },
+
+    /** The text of the caption */
+    caption :
+    {
+      check    : "String",
+      nullable : true,
+      apply    : "_applyCaption",
+      event    : "changeCaption"
+    }
+  },
+
   /*
   *****************************************************************************
      MEMBERS
@@ -109,81 +131,85 @@ qx.Class.define("collapsablepanel.Panel",
   */
   members :
   {
-    _atom  : null,
-    _image : null,
-    _bar : null,
-    _container : null,
-    _effect : null,
-    _height : null,
-    
+    /*
+    ---------------------------------------------------------------------------
+      WIDGET API
+    ---------------------------------------------------------------------------
+    */
+
     /**
-     * Apply method for the opened/closed state of the widget
-     * @param value {Boolean}
-     * @param old {Boolean}
+     * @lint ignoreReferenceField(_forwardStates)
      */
-    _applyOpened : function( value, old )
+    // overridden
+    _forwardStates :
     {
-//      /*
-//       * don't do anythin until the widget has been rendered
-//       */
-//      if ( ! this._effect )
-//      {
-//        return;
-//      }
-      
-      if ( old  )
+      "opened" : true
+    },
+
+    // overridden
+    _createChildControlImpl : function(id)
+    {
+      var control;
+
+      switch(id)
       {
-//        this._heigth = qx.bom.element.Dimension.getHeight( this._container.getContentElement().getDomElement() );
-//        this._effect.addListenerOnce("finish", function(){
-//          this._image.setSource("decoration/tree/closed.png");
-//        },this );
-//        this._effect.set({
-//          scaleX   : false,
-//          scaleTo  : 0,
-//          duration : 0.5
-//        });
-//        this._effect.start();
-        this._container.setVisibility("excluded");
-        this._image.setSource("decoration/tree/closed.png");
+        case "bar":
+          control = new qx.ui.basic.Atom(this.getCaption());
+          control.addListener("click", this.toggleValue, this);
+          this._add(control);
+          break;
+
+        case "container":
+          control = new qx.ui.container.Composite();
+          this._add(control);
+          break;
       }
-      
-      if ( value )
-      {
-//        this._effect.addListenerOnce("finish", function(){
-//          this._image.setSource("decoration/tree/open.png");
-//        },this );
-//        this._effect.set({
-//          scaleX   : false,
-//          scaleTo  : 100,
-//          duration : 0.5
-//        });
-//        this._effect.start();        
-        this._container.setVisibility("visible");
-        this._image.setSource("decoration/tree/open.png");
+
+      return control || this.base(arguments, id);
+    },
+
+
+    /**
+     * The children container needed by the {@link qx.ui.core.MRemoteChildrenHandling}
+     * mixin
+     *
+     * @return {qx.ui.container.Composite} The container sub widget
+     */
+    getChildrenContainer : function()
+    {
+      return this.getChildControl("container");
+    },
+
+
+     /**
+     * Returns the element, to which the content padding should be applied.
+     *
+     * @return {qx.ui.core.Widget} The container sub widget
+     */
+    _getContentPaddingTarget : function()
+    {
+      return this.getChildControl("container");
+    },
+
+    // property apply
+    _applyValue : function(value)
+    {
+      // It would be nice if we could theme visibility
+      if (value) {
+        this.addState("opened");
+        this.getChildControl("container").show();
+        this.getChildControl("bar").setLayoutProperties({});
+      } else {
+        this.removeState("opened");
+        this.getChildControl("container").exclude();
+        this.getChildControl("bar").setLayoutProperties({flex:1});
       }
     },
-    
-    /**
-     * Applies the panel content
-     * @param value {qx.ui.core.Widget|null}
-     * @param old {qx.ui.core.Widget|null}
-     */
-    _applyContent : function( value, old )
+
+    // property apply
+    _applyCaption : function(value)
     {
-      if ( old )
-      {
-        this._container.removeAll();
-      }
-      if ( value )
-      {
-        this._container.add( value );
-      }
-    },
-    
-    _onToggleOpen : function()
-    {
-      this.setOpened( ! this.getOpened() ); 
+      this.getChildControl("bar").setLabel(value);
     }
   }
-  
 });
