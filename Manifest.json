@@ -3,14 +3,18 @@
   {
     "name" : "collapsablePanel",
 
-    "summary" : "collapsablePanel Contribution",
-    "description" : "This is a skeleton for a qooxdoo contribution.",
+    "summary" : "CollapsablePanel Widget",
+    "description" : "A widget that allows to collapse and expand certain sections within a panel and comes with a choice of appearances.",
     
     "homepage" : "http://contrib.qooxdoo.org/project/collapsablePanel",
 
     "license" : "LGPL/EPL",
     "authors" : 
     [
+      {
+        "name" : "Matthew Gregory",
+        "email" : "matthew@nogsnet.com"
+      },
       {
         "name" : "Christian Boulanger (cboulanger)",
         "email" : "info@bibliograph.org"
