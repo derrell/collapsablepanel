@@ -121,6 +121,7 @@ qx.Class.define("collapsablepanel.demo.Application",
         var label = new qx.ui.basic.Label();
         label.setRich(true);
         label.setValue("qooxdoo is a comprehensive and innovative framework for creating rich internet applications (RIAs). Leveraging object-oriented JavaScript allows developers to build impressive cross-browser applications. No HTML, CSS nor DOM knowledge is needed.It includes a platform-independent development tool chain, a state-of-the-art GUI toolkit and an advanced client-server communication layer. It is open source under an LGPL/EPL dual license.");
+        label.setPadding(5);
         panel.add( label );
         
         panel.setAppearance("collapsable-panel-classic");
@@ -140,7 +141,7 @@ qx.Class.define("collapsablepanel.demo.Application",
       {
         var label = new qx.ui.basic.Atom(bg[i]);
         label.setBackgroundColor(bg[i]);
-        label.setDecorator("main");
+        label.setPadding(5);
         panel.add(label, {edge : edge[i]} );
       }
       panel.setValue(false);      
