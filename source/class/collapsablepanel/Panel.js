@@ -175,7 +175,7 @@ qx.Class.define("collapsablepanel.Panel",
         case "bar":
           control = new qx.ui.basic.Atom(this.getCaption());
           control.addListener("click", this.toggleValue, this);
-          this._add(control);
+          this._add(control, {flex:0} );
           break;
 
         case "container":
@@ -211,16 +211,26 @@ qx.Class.define("collapsablepanel.Panel",
     },
 
     // property apply
-    _applyValue : function(value)
+    _applyValue : function(value, old)
     {
+      if ( old )
+      {
+        this.__flex = this.getLayoutProperties().flex;
+      }
+      
       // It would be nice if we could theme visibility
       if (value) {
         this.addState("opened");
         this.getChildControl("bar").setLayoutProperties(null);
         this.getChildControl("container").show();
+        if ( this.__flex )
+        {
+          this.setLayoutProperties({flex:this.__flex});
+        }
       } else {
         this.removeState("opened");
-        this.getChildControl("bar").setLayoutProperties({flex:1});
+        this.setLayoutProperties({flex:0});
+//        this.getChildControl("bar").setLayoutProperties({flex:1});
         this.getChildControl("container").exclude();
       }
     },
