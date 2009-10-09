@@ -1,0 +1,34 @@
+{
+  "info" : 
+  {
+    "name" : "collapsablePanel",
+
+    "summary" : "collapsablePanel Contribution",
+    "description" : "This is a skeleton for a qooxdoo contribution.",
+    
+    "homepage" : "http://contrib.qooxdoo.org/project/collapsablePanel",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+        "name" : "Christian Boulanger (cboulanger)",
+        "email" : "info@bibliograph.org"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["0.9-pre"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "collapsablepanel",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "contribution"
+  }
+}
+
