@@ -1,9 +1,9 @@
 {
   "info" : 
   {
-    "name" : "collapsablePanel Demo",
+    "name" : "CollapsablePanel Demo",
 
-    "summary" : "collapsablePanel Demo",
+    "summary" : "CollapsablePanel Demo",
     "description" : "This is a skeleton for a qooxdoo contribution demo.",
     
     "homepage" : "http://demo.qooxdoo.org/contrib/collapsablePanel",
@@ -12,8 +12,12 @@
     "authors" : 
     [
       {
-        "name" : "First Author (uid)",
-        "email" : "first.author@some.domain"
+        "name" : "Matthew Gregory",
+        "email" : "matthew@nogsnet.com"
+      },
+      {
+        "name" : "Christian Boulanger (cboulanger)",
+        "email" : "info@bibliograph.org"
       }
     ],
 
