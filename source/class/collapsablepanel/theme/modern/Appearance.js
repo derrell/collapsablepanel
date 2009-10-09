@@ -59,7 +59,7 @@ qx.Theme.define("collapsablepanel.theme.modern.Appearance",
       {
         return {
 //          decorator: "main",
-          padding: [5, 5]
+//          padding: [5, 5]
         }
       }
     }
