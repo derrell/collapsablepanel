@@ -55,10 +55,11 @@ qx.Class.define("collapsablepanel.demo.Application",
       -------------------------------------------------------------------------
       */
 
-      var vbox = new qx.ui.container.Composite( new qx.ui.layout.VBox() );
+      var vbox = new qx.ui.container.Composite( new qx.ui.layout.VBox(5) );
       vbox.setAllowGrowY(true);
       vbox.setAllowShrinkY(true);
       vbox.setAllowStretchY(true);
+      vbox.setPadding(5);
       var scroll = new qx.ui.container.Scroll( vbox );
       scroll.set({
         width  : 600,

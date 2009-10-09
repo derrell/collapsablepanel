@@ -50,7 +50,7 @@
  *
  * <a href='http://qooxdoo.org/contrib/project/collapsablepanel' target='_blank'>
  * Documentation of this widget in the qooxdoo wiki.</a>
- * 
+ *
  * @state opened Whether the panel is currently open
  */
 qx.Class.define("collapsablepanel.Panel",
@@ -82,8 +82,9 @@ qx.Class.define("collapsablepanel.Panel",
 
     this._setLayout(new qx.ui.layout.VBox());
 
-    this.getChildControl("bar");
-    this.getChildControl("container");
+    this.initValue();
+    this.initShowSeparator();
+    this.initGap();
 
     if (label != null) {
       this.setCaption(label);
@@ -121,6 +122,24 @@ qx.Class.define("collapsablepanel.Panel",
       nullable : true,
       apply    : "_applyCaption",
       event    : "changeCaption"
+    },
+    
+    /** Show a separator between the heading and container */
+    showSeparator :
+    {
+      check     : "Boolean",
+      themeable : true,
+      init      : true,
+      apply     : "_applyShowSeparator"
+    },
+
+    /** Themeable distance between the header and container */
+    gap :
+    {
+      check     : "Integer",
+      init      : 5,
+      themeable : true,
+      apply     : "_applyGap"
     }
   },
 
@@ -161,7 +180,7 @@ qx.Class.define("collapsablepanel.Panel",
 
         case "container":
           control = new qx.ui.container.Composite();
-          this._add(control);
+          this._add(control, {flex : 1});
           break;
       }
 
@@ -197,12 +216,12 @@ qx.Class.define("collapsablepanel.Panel",
       // It would be nice if we could theme visibility
       if (value) {
         this.addState("opened");
+        this.getChildControl("bar").setLayoutProperties(null);
         this.getChildControl("container").show();
-        this.getChildControl("bar").setLayoutProperties({});
       } else {
         this.removeState("opened");
-        this.getChildControl("container").exclude();
         this.getChildControl("bar").setLayoutProperties({flex:1});
+        this.getChildControl("container").exclude();
       }
     },
 
@@ -210,6 +229,18 @@ qx.Class.define("collapsablepanel.Panel",
     _applyCaption : function(value)
     {
       this.getChildControl("bar").setLabel(value);
+    },
+
+    // property apply
+    _applyShowSeparator : function(value)
+    {
+      this._getLayout().setSeparator(value ? "separator-vertical" : null);
+    },
+
+    // property apply
+    _applyGap : function(value)
+    {
+      this._getLayout().setSpacing(value);
     }
   }
 });

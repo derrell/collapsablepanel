@@ -14,29 +14,24 @@ qx.Theme.define("collapsablepanel.theme.modern.Appearance",
   {
     "collapsable-panel" :
     {
+      style : function(states)
+      {
+        return {decorator : "pane", padding: [5, 10]};
+      }  
     },
 
     "collapsable-panel/bar" :
     {
-      include : "menubar",
-      alias   : "menubar",
+      include : "atom",
+      alias   : "atom",
       style : function(states)
       {
         return {
-          icon        : states.opened ? "decoration/tree/open.png" : "decoration/tree/closed.png",
-          paddingLeft : 2
+          icon : states.opened ? "decoration/tree/open.png" : "decoration/tree/closed.png"
         };
       }
     },
     
-    "collapsable-panel/container" :
-    {
-      style : function(states)
-      {
-        return {
-          decorator : "main"
-        };
-      }
-    }
+    "collapsable-panel/container" : "widget"
   }
 });
