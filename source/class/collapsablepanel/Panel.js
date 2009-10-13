@@ -62,6 +62,9 @@ qx.Class.define("collapsablepanel.Panel",
     qx.ui.core.MRemoteLayoutHandling,
     qx.ui.core.MContentPadding
   ],
+  implement : [
+    qx.ui.form.IRadioItem
+  ],
 
   /*
   *****************************************************************************
@@ -81,6 +84,8 @@ qx.Class.define("collapsablepanel.Panel",
     this.base(arguments);
 
     this._setLayout(new qx.ui.layout.VBox());
+
+    this.getChildControl("bar"); // ensure this is always created first
 
     this.initValue();
     this.initShowSeparator();
@@ -140,6 +145,24 @@ qx.Class.define("collapsablepanel.Panel",
       init      : 5,
       themeable : true,
       apply     : "_applyGap"
+    },
+
+    /** The optionally assigned qx.ui.form.RadioGroup which allows the panel to used in an accordian style*/
+    group :
+    {
+      check    : "qx.ui.form.RadioGroup",
+      nullable : true,
+      apply    : "_applyGroup"
+    },
+
+    /**
+     * Controls how the panel should be rendered when collapsed.
+     */
+    orientation :
+    {
+      check : ["horizontal", "vertical"],
+      init  : "vertical",
+      apply : "_applyOrientation"
     }
   },
 
@@ -162,7 +185,8 @@ qx.Class.define("collapsablepanel.Panel",
     // overridden
     _forwardStates :
     {
-      "opened" : true
+      "opened"     : true,
+      "horizontal" : true
     },
 
     // overridden
@@ -213,24 +237,12 @@ qx.Class.define("collapsablepanel.Panel",
     // property apply
     _applyValue : function(value, old)
     {
-      if ( old )
-      {
-        this.__flex = this.getLayoutProperties().flex;
-      }
-      
       // It would be nice if we could theme visibility
       if (value) {
         this.addState("opened");
-        this.getChildControl("bar").setLayoutProperties(null);
         this.getChildControl("container").show();
-        if ( this.__flex )
-        {
-          this.setLayoutProperties({flex:this.__flex});
-        }
       } else {
         this.removeState("opened");
-        this.setLayoutProperties({flex:0});
-//        this.getChildControl("bar").setLayoutProperties({flex:1});
         this.getChildControl("container").exclude();
       }
     },
@@ -251,6 +263,27 @@ qx.Class.define("collapsablepanel.Panel",
     _applyGap : function(value)
     {
       this._getLayout().setSpacing(value);
+    },
+
+    // property apply
+    _applyOrientation : function(value)
+    {
+      if (value === "horizontal") {
+        this.addState("horizontal");
+      } else {
+        this.removeState("horizontal");
+      }
+    },
+
+     // property apply
+    _applyGroup : function(value, old)
+    {
+      if (old) {
+        old.remove(this);
+      }
+      if (value) {
+        value.add(this);
+      }
     }
   }
 });
