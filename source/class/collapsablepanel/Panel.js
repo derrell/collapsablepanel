@@ -199,7 +199,7 @@ qx.Class.define("collapsablepanel.Panel",
         case "bar":
           control = new qx.ui.basic.Atom(this.getCaption());
           control.addListener("click", this.toggleValue, this);
-          this._add(control, {flex:0} );
+          this._add(control, {flex : 1});
           break;
 
         case "container":
