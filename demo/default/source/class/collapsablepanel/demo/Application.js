@@ -64,6 +64,7 @@ qx.Class.define("collapsablepanel.demo.Application",
       this.getRoot().add(label, {left: 10, top: 10});
 
       var panels = [];
+      var labels = [];
 
       /*
        * main box
@@ -75,13 +76,23 @@ qx.Class.define("collapsablepanel.demo.Application",
       /*
        * left panel container: modern theme
        */
-      var vbox = new qx.ui.container.Composite(new qx.ui.layout.VBox(5));
-      vbox.setPadding(5);
-      vbox.setDecorator("pane");
-      vbox.setWidth(500);
-      vbox.setHeight(400);
+      var resize = new qx.ui.container.Resizer(new qx.ui.layout.Grow);
+      resize.setDecorator("pane");
+      resize.setWidth(500);
+      resize.setHeight(400);
+      resize.setPadding(5);
+      resize.setBackgroundColor("white");
 
-      var btnAppearance  = new qx.ui.form.ToggleButton("Classic Appearance").set({width :150});
+      var scroll = new qx.ui.container.Scroll();
+      resize.add(scroll);
+
+      var vbox = new qx.ui.container.Composite(new qx.ui.layout.VBox(5));
+      vbox.setPadding(0);
+      scroll.add(vbox);
+
+      var btnBox = new qx.ui.container.Composite(new qx.ui.layout.HBox());
+
+      var btnAppearance  = new qx.ui.form.ToggleButton("Classic Appearance");
       btnAppearance.addListener("changeValue", function(e)
       {
         for (var i = 0, l = panels.length; i < l; i++)
@@ -89,8 +100,8 @@ qx.Class.define("collapsablepanel.demo.Application",
           panels[i].setAppearance(e.getData() ? "collapsable-panel-classic" : "collapsable-panel");
         }
         this.getLayout().setSpacing(!e.getData() * 5);
-        this.setPadding(!e.getData() * 5);
-        this.setDecorator(e.getData() ? "main" : "pane");
+        resize.setPadding(!e.getData() * 5);
+        resize.setDecorator(e.getData() ? "main" : "pane");
       }, vbox);
       var btnOrientation = new qx.ui.form.ToggleButton("Horizontal");
       btnOrientation.addListener("changeValue", function(e)
@@ -102,10 +113,40 @@ qx.Class.define("collapsablepanel.demo.Application",
         {
           panels[i].setOrientation(e.getData() ? "horizontal" : "vertical");
         }
+        for (var i = 0, l = labels.length; i < l; i++)
+        {
+          labels[i].setWidth(e.getData() && !btnFlex.getValue() ? 100 : null);
+        }
       }, vbox);
 
-      this.getRoot().add(btnAppearance,  {left: 10, top: 60} );
-      this.getRoot().add(btnOrientation, {left: 160, top: 60} );
+      var btnFlex = new qx.ui.form.ToggleButton("Use Flex");
+      btnFlex.addListener("changeValue", function(e)
+      {
+        for (var i = 0, l = panels.length; i < l; i++)
+        {
+          panels[i].setLayoutProperties({flex:Number(e.getData())});
+        }
+        for (var i = 0, l = labels.length; i < l; i++)
+        {
+          labels[i].setWidth(!e.getData() && btnOrientation.getValue() ? 100 : null);
+        }
+      }, vbox);
+      
+      var btnGroup = new qx.ui.form.ToggleButton("Use Radio Group");
+      btnGroup.addListener("changeValue", function(e)
+      {
+        for (var i = 0, l = panels.length; i < l; i++)
+        {
+          panels[i].setGroup(e.getData() ? group : null);
+        }
+      }, vbox);
+
+      btnBox.add(btnAppearance);
+      btnBox.add(btnOrientation);
+      btnBox.add(btnFlex);
+      btnBox.add(btnGroup);
+
+      this.getRoot().add(btnBox,  {left: 10, top: 60} );
 
       var numbers = ["First","Second","Third","Fourth","Fifth"];
       for ( var i=0; i< numbers.length; i++)
@@ -114,17 +155,16 @@ qx.Class.define("collapsablepanel.demo.Application",
         var label = new qx.ui.basic.Label();
         panels.push(panel);
         label.setRich(true);
+        labels.push(label);
         label.setValue("qooxdoo is a comprehensive and innovative framework for creating rich internet applications (RIAs). Leveraging object-oriented JavaScript allows developers to build impressive cross-browser applications. No HTML, CSS nor DOM knowledge is needed.It includes a platform-independent development tool chain, a state-of-the-art GUI toolkit and an advanced client-server communication layer. It is open source under an LGPL/EPL dual license.");
         panel.add( label );
-        panel.setGroup(group);
-        vbox.add(panel, {flex:1} );
+        vbox.add(panel);
         panel.setValue(false);
       }
 
       var panel = new collapsablepanel.Panel("Panel With Dock Layout", new qx.ui.layout.Dock(5, 5));
       panels.push(panel);
       panel.setContentPadding(5);
-      panel.setGroup(group);
 
       var edge = ["north", "east",  "south", "west",   "center"];
       var bg   = ["red",   "green", "blue",  "yellow", "white"];
@@ -136,11 +176,11 @@ qx.Class.define("collapsablepanel.demo.Application",
         label.setPadding(5);
         panel.add(label, {edge : edge[i]} );
       }
-      vbox.add(panel, {flex:1} );
+      vbox.add(panel);
       panel.setValue(false);
 
-      this.getRoot().add(vbox, {left: 10, top: 100} );
-      
+      this.getRoot().add(resize, {left: 10, top: 100} );
+
       panels[0].setValue(true);
 
     }
