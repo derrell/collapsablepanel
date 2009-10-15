@@ -85,7 +85,7 @@ qx.Theme.define("collapsablepanel.theme.modern.Appearance",
         return {
           decorator : "menubar",
           padding   :  3,
-          margin    : -1
+          margin    : [-1, -1, 0, -1]
         };
       }
     },
