@@ -284,6 +284,22 @@ qx.Class.define("collapsablepanel.Panel",
       if (value) {
         value.add(this);
       }
+    },
+    
+    // overridden
+    _computeSizeHint : function()
+    {
+      var hint = this.base(arguments);
+      if (!this.getValue())
+      {
+        var child = this.getChildControl("bar").getSizeHint();
+        if (this.getOrientation() === "horizontal") {
+          hint.maxWidth = Math.min(hint.maxWidth, child.width + this.getPaddingLeft() + this.getPaddingRight());
+        } else {
+          hint.maxHeight = Math.min(hint.maxWidth, child.height + this.getPaddingTop() + this.getPaddingBottom());
+        }
+      }
+      return hint;
     }
   }
 });
