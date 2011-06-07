@@ -30,7 +30,7 @@
   "let" :
   {
     "APPLICATION"  : "collapsablepanel.demo",
-    "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
+    "QOOXDOO_PATH" : "../../../../../../qooxdoo/frontend",
     "QXTHEME"      : "collapsablepanel.demo.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*"],
     "LOCALES"      : [ "en" ],
