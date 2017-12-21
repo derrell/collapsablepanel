@@ -296,7 +296,7 @@ qx.Class.define("collapsablepanel.Panel",
         if (this.getOrientation() === "horizontal") {
           hint.maxWidth = Math.min(hint.maxWidth, child.width + this.getPaddingLeft() + this.getPaddingRight());
         } else {
-          hint.maxHeight = Math.min(hint.maxWidth, child.height + this.getPaddingTop() + this.getPaddingBottom());
+          hint.maxHeight = Math.min(hint.maxHeight, child.height + this.getPaddingTop() + this.getPaddingBottom());
         }
       }
       return hint;
